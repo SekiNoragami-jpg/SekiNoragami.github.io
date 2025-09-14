@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>แนวข้อสอบวิทยาการคำนวณ ม.6</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Kanit', sans-serif; }
+        .gradient-bg { 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%); 
+            animation: gradientShift 8s ease-in-out infinite;
+        }
+        @keyframes gradientShift {
+            0%, 100% { background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%); }
+            50% { background: linear-gradient(135deg, #f093fb 0%, #667eea 50%, #764ba2 100%); }
+        }
+        .tech-pattern { 
+            background-image: 
+                radial-gradient(circle at 25% 25%, rgba(255,255,255,0.1) 2px, transparent 2px),
+                radial-gradient(circle at 75% 75%, rgba(255,255,255,0.08) 1px, transparent 1px),
+                linear-gradient(45deg, rgba(255,255,255,0.03) 25%, transparent 25%);
+            background-size: 40px 40px, 60px 60px, 20px 20px;
+            animation: techMove 20s linear infinite;
+        }
+        @keyframes techMove {
+            0% { background-position: 0 0, 0 0, 0 0; }
+            100% { background-position: 40px 40px, -60px -60px, 20px 20px; }
+        }
+        .question-card { 
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            background: linear-gradient(145deg, #ffffff, #f8fafc);
+            border: 2px solid rgba(99, 102, 241, 0.3);
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.1);
+        }
+        .question-card:hover { 
+            transform: translateY(-8px) scale(1.02); 
+            box-shadow: 0 20px 40px rgba(99, 102, 241, 0.15);
+            border-color: rgba(99, 102, 241, 0.3);
+        }
+        .option-btn { 
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        .option-btn:hover { 
+            transform: translateX(8px) scale(1.02); 
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.15);
+        }
+        .option-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.1), transparent);
+            transition: left 0.5s;
+        }
+        .option-btn:hover::before {
+            left: 100%;
+        }
+        .correct-answer { 
+            background: linear-gradient(135deg, #10b981, #059669) !important;
+            color: white !important;
+            border-color: #059669 !important;
+            animation: correctPulse 0.6s ease-in-out;
+        }
+        .incorrect-answer { 
+            background: linear-gradient(135deg, #ef4444, #dc2626) !important;
+            color: white !important;
+            border-color: #dc2626 !important;
+            animation: incorrectShake 0.6s ease-in-out;
+        }
+        @keyframes correctPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        @keyframes incorrectShake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        .selected { 
+            border: 2px solid #3b82f6; 
+            background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+        }
+        .score-display {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            padding: 1rem;
+            border-radius: 1rem;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3);
+            animation: scoreGlow 2s ease-in-out infinite alternate;
+        }
+        @keyframes scoreGlow {
+            0% { box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3); }
+            100% { box-shadow: 0 15px 40px rgba(99, 102, 241, 0.5); }
+        }
+        .neon-text {
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        .floating-icon {
+            animation: float 3s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <header class="gradient-bg tech-pattern text-white py-6 px-4 shadow-lg">
+        <div class="max-w-4xl mx-auto text-center">
+            <div class="flex items-center justify-center mb-4">
+                <div class="floating-icon mr-4">
+                    <svg class="w-16 h-16 text-yellow-300" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2L2 7v10c0 5.55 3.84 9.74 9 11 5.16-1.26 9-5.45 9-11V7l-10-5z"/>
+                        <path d="M9 12l2 2 4-4" stroke="white" stroke-width="2" fill="none"/>
+                    </svg>
+                </div>
+                <h1 class="text-4xl md:text-5xl font-bold neon-text bg-gradient-to-r from-yellow-300 via-orange-300 to-pink-300 bg-clip-text text-transparent">แนวข้อสอบวิทยาการคำนวณ</h1>
+            </div>
+            <p class="text-xl md:text-2xl opacity-95 mb-4 bg-gradient-to-r from-cyan-200 via-blue-200 to-purple-200 bg-clip-text text-transparent font-semibold">ชั้นมัธยมศึกษาปีที่ 6 | เทคโนโลยีอนาคต</p>
+            <div class="mt-6 flex flex-wrap justify-center gap-3">
+                <span class="bg-gradient-to-r from-blue-500 to-purple-600 px-4 py-2 rounded-full text-sm font-semibold shadow-lg">🤖 ปัญญาประดิษฐ์</span>
+                <span class="bg-gradient-to-r from-cyan-500 to-blue-600 px-4 py-2 rounded-full text-sm font-semibold shadow-lg">☁️ คลาวด์คอมพิวติ้ง</span>
+                <span class="bg-gradient-to-r from-green-500 to-teal-600 px-4 py-2 rounded-full text-sm font-semibold shadow-lg">🌐 อินเทอร์เน็ตของสรรพสิ่ง</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-4xl mx-auto px-4 py-8">
+        <!-- Navigation Menu -->
+        <div class="bg-white rounded-2xl shadow-xl p-6 mb-8 border border-gray-200">
+            <div class="flex flex-wrap justify-center gap-4 mb-6">
+                <button id="menuMultiple" class="menu-btn bg-gradient-to-r from-blue-500 to-purple-600 text-white px-6 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200">
+                    📝 ข้อสอบปรนัย
+                </button>
+                <button id="menuEssay" class="menu-btn bg-gray-200 text-gray-700 px-6 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200">
+                    ✍️ ข้อสอบอัตนัย
+                </button>
+                <button id="menuAnswers" class="menu-btn bg-gray-200 text-gray-700 px-6 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200">
+                    💡 เฉลย
+                </button>
+            </div>
+            
+            <div class="flex flex-wrap justify-center gap-3">
+                <button id="resetBtn" class="control-btn bg-gradient-to-r from-green-500 to-teal-600 text-white px-5 py-2 rounded-lg font-medium shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200">
+                    🔄 เริ่มใหม่
+                </button>
+                <button id="shuffleBtn" class="control-btn bg-gradient-to-r from-orange-500 to-red-600 text-white px-5 py-2 rounded-lg font-medium shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200">
+                    🎲 สุ่มข้อ
+                </button>
+            </div>
+        </div>
+
+        <!-- Quiz Info -->
+        <div id="quizInfo" class="bg-gradient-to-r from-white to-blue-50 rounded-2xl shadow-xl p-6 mb-8 border border-blue-200 relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-400/20 to-purple-400/20 rounded-full -mr-16 -mt-16"></div>
+            <div class="relative z-10">
+                <div class="flex flex-col lg:flex-row lg:items-center justify-between">
+                    <div class="flex items-center mb-4 lg:mb-0">
+                        <div class="floating-icon mr-4">
+                            <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
+                                <span class="text-2xl">📝</span>
+                            </div>
+                        </div>
+                        <div>
+                            <h2 class="text-2xl font-bold text-gray-800 mb-1">ข้อสอบปรนัย 20 ข้อ</h2>
+                            <p class="text-gray-600 flex items-center">
+                                <span class="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
+                                ครอบคลุมเนื้อหา AI, Cloud Computing และ IoT
+                            </p>
+                        </div>
+                    </div>
+                    <div class="score-display min-w-[200px]">
+                        <div class="text-3xl font-bold mb-1" id="score">0/20</div>
+                        <div class="text-sm opacity-90" id="progress">ความคืบหน้า: 0%</div>
+                        <div class="w-full bg-white/30 rounded-full h-2 mt-2">
+                            <div class="bg-white h-2 rounded-full transition-all duration-500" id="progressBar" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Questions Container -->
+        <div id="questionsContainer" class="space-y-6">
+            <!-- Questions will be loaded here -->
+        </div>
+
+        <!-- Essay Questions Section -->
+        <div id="essaySection" class="mt-12 bg-gradient-to-r from-purple-100 to-blue-100 rounded-xl p-6 border-l-4 border-purple-500 hidden">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center">
+                <svg class="w-8 h-8 mr-3 text-purple-600" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                </svg>
+                ข้อสอบอัตนัย (2 ข้อ)
+            </h2>
+            <p class="text-gray-600 mb-6">ข้อสอบเขียนตอบ ให้นักเรียนอธิบายและวิเคราะห์</p>
+            
+            <div id="essayContainer" class="space-y-6">
+                <!-- Essay questions will be loaded here -->
+            </div>
+            
+            <div class="mt-6 text-center">
+                <button id="showAnswersBtn" class="bg-purple-600 text-white px-8 py-4 rounded-xl font-semibold text-lg hover:bg-purple-700 transition-colors">
+                    ดูตัวอย่างคำตอบ 📝
+                </button>
+            </div>
+        </div>
+
+        <!-- Answer Key Section -->
+        <div id="answerKeySection" class="mt-12 bg-gradient-to-r from-green-100 to-emerald-100 rounded-xl p-6 border-l-4 border-green-500 hidden">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center">
+                <svg class="w-8 h-8 mr-3 text-green-600" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z"/>
+                </svg>
+                เฉลยข้อสอบ
+            </h2>
+            <p class="text-gray-600 mb-6">คำตอบที่ถูกต้องของข้อสอบทั้งหมด</p>
+            
+            <!-- Essay Answers Only -->
+            <div class="bg-white rounded-xl p-6 shadow-md max-w-4xl mx-auto">
+                <h3 class="text-2xl font-semibold text-gray-800 mb-6 flex items-center">
+                    <span class="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center text-white text-sm mr-4">✍️</span>
+                    เฉลยข้อสอบอัตนัย
+                </h3>
+                <div id="essayAnswers" class="space-y-6">
+                    <!-- Essay answers will be loaded here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="text-center mt-8">
+            <button id="submitBtn" class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-12 py-4 rounded-xl font-semibold text-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+                ตรวจคำตอบ 📊
+            </button>
+        </div>
+
+        <!-- Results -->
+        <div id="results" class="hidden mt-8 bg-gradient-to-br from-white to-purple-50 rounded-2xl shadow-2xl p-8 border border-purple-200 relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-green-400 via-blue-500 to-purple-600"></div>
+            <div class="text-center">
+                <div class="floating-icon mb-4">
+                    <div class="w-20 h-20 bg-gradient-to-br from-green-400 to-blue-500 rounded-full flex items-center justify-center mx-auto">
+                        <span class="text-4xl">🎯</span>
+                    </div>
+                </div>
+                <h3 class="text-3xl font-bold text-gray-800 mb-6 neon-text">ผลการทำข้อสอบ</h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div class="bg-gradient-to-br from-green-500 to-emerald-600 text-white p-6 rounded-xl shadow-lg">
+                        <div class="text-2xl font-bold mb-2" id="correctCount">0</div>
+                        <div class="text-sm opacity-90">ข้อที่ถูก</div>
+                    </div>
+                    <div class="bg-gradient-to-br from-red-500 to-pink-600 text-white p-6 rounded-xl shadow-lg">
+                        <div class="text-2xl font-bold mb-2" id="incorrectCount">0</div>
+                        <div class="text-sm opacity-90">ข้อที่ผิด</div>
+                    </div>
+                    <div class="bg-gradient-to-br from-blue-500 to-indigo-600 text-white p-6 rounded-xl shadow-lg">
+                        <div class="text-2xl font-bold mb-2" id="percentageScore">0%</div>
+                        <div class="text-sm opacity-90">คะแนนรวม</div>
+                    </div>
+                </div>
+                
+                <div id="finalScore" class="text-5xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent mb-4"></div>
+                <div id="scoreMessage" class="text-xl text-gray-700 mb-8 font-medium"></div>
+                
+                <button id="retryBtn" class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-12 py-5 rounded-xl font-semibold text-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200">
+                    ทำข้อสอบใหม่ 🔄
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const questions = [
+            {
+                id: 1,
+                question: "ข้อความใดกล่าวถูกต้องเกี่ยวกับนวัตกรรมและเทคโนโลยีสมัยใหม่",
+                options: [
+                    "ปัญญาประดิษฐ์สามารถนำมาใช้ช่วยในการแปลภาษาได้",
+                    "อุปกรณ์ IoT ทำให้ประหยัดค่าซอฟต์แวร์ที่ใช้สำหรับการประมวลผล",
+                    "หมวกความเป็นจริงเสริมมีราคาถูกและมีการใช้งานเพื่อความบันเทิงอย่างแพร่หลายในปัจจุบัน",
+                    "การใช้เซ็นเซอร์วัดคุณภาพของดินความชื้นหรือสภาพอากาศเป็นตัวอย่างหนึ่งของอุปกรณ์ความเป็นจริงเสมือน"
+                ],
+                correct: 0
+            },
+            {
+                id: 2,
+                question: "ปัญญาประดิษฐ์เป็นสาขาหนึ่งของวิชาอะไร",
+                options: [
+                    "วิทยาการข้อมูล",
+                    "วิทยาการคอมพิวเตอร์",
+                    "วิทยาการสารสนเทศ",
+                    "คณิตศาสตร์"
+                ],
+                correct: 1
+            },
+            {
+                id: 3,
+                question: "ปัญญาประดิษฐ์ มีวัตถุประสงค์เพื่อ",
+                options: [
+                    "การสร้างความฉลาดของเครื่องจักร",
+                    "การสร้างความฉลาดให้กับมนุษย์",
+                    "การผลิตหุ่นยนต์ที่ทันสมัย",
+                    "การสร้างเทคโนโลยีเสมือนจริง"
+                ],
+                correct: 0
+            },
+            {
+                id: 4,
+                question: "ข้อใดไม่ใช่นวัตกรรมที่ใช้ปัญญาประดิษฐ์",
+                options: [
+                    "เครื่องแปลภาษา",
+                    "จักรยานปั่นในน้ำ",
+                    "การระบุตัวตนด้วยใบหน้า",
+                    "รถยนต์ขับเคลื่อนอัตโนมัติ"
+                ],
+                correct: 1
+            },
+            {
+                id: 5,
+                question: "ข้อใดคือ AI (ปัญญาประดิษฐ์)",
+                options: [
+                    "Artificial intelligence",
+                    "Algorithm intelligence",
+                    "Attitude intelligence",
+                    "Activision intelligence"
+                ],
+                correct: 0
+            },
+            {
+                id: 6,
+                question: "เทคโนโลยีใดต้องอาศัยอินเทอร์เน็ตเป็นพื้นฐานสำคัญในการทำงาน",
+                options: [
+                    "เทคโนโลยีเสมือนจริง",
+                    "ปัญญาประดิษฐ์",
+                    "การประมวลผลแบบคลาวด์",
+                    "ความเป็นจริงเสมือน"
+                ],
+                correct: 2
+            },
+            {
+                id: 7,
+                question: "การรับรู้ของคอมพิวเตอร์ หรือ AI สามารถรับรู้โดยผ่านด้านใด",
+                options: [
+                    "ตา",
+                    "หู",
+                    "ประสาท",
+                    "เซ็นเซอร์"
+                ],
+                correct: 3
+            },
+            {
+                id: 8,
+                question: "ปัญญาประดิษฐ์ เป็นเทคโนโลยีที่อยู่ในยุคใด",
+                options: [
+                    "Digital 1.0",
+                    "Digital 2.0",
+                    "Digital 3.0",
+                    "Digital 4.0"
+                ],
+                correct: 3
+            },
+            {
+                id: 9,
+                question: "ตัวอย่างใดต่อไปนี้ ไม่ใช่ การนำ AI มาใช้ในชีวิตประจำวัน",
+                options: [
+                    "ระบบแนะนำหนังใน Netflix",
+                    "โปรแกรมพิมพ์ดีดอัตโนมัติที่ไม่เรียนรู้ผู้ใช้",
+                    "Siri หรือ Google Assistant",
+                    "ระบบตรวจจับใบหน้าเพื่อปลดล็อกโทรศัพท์"
+                ],
+                correct: 1
+            },
+            {
+                id: 10,
+                question: "ข้อใดเป็นคุณสมบัติหลักของ AI ที่ต่างจากโปรแกรมทั่วไป",
+                options: [
+                    "AI สามารถเรียนรู้และปรับตัวได้จากข้อมูลใหม่ ๆ",
+                    "AI ต้องเขียนโค้ดยาวกว่าโปรแกรมปกติ",
+                    "AI ใช้คอมพิวเตอร์สเปกสูงเสมอ",
+                    "AI ใช้ได้เฉพาะในโทรศัพท์มือถือ"
+                ],
+                correct: 0
+            },
+            {
+                id: 11,
+                question: "หากนักเรียนต้องการใช้ AI อย่างสร้างสรรค์และมีจริยธรรม ควรปฏิบัติอย่างไร",
+                options: [
+                    "ใช้ AI ทำรายงานแทนทั้งหมดโดยไม่ตรวจสอบ",
+                    "ตรวจสอบข้อมูลที่ AI สร้างขึ้น และอ้างอิงแหล่งที่มาเมื่อใช้",
+                    "หลีกเลี่ยงการใช้ AI ทุกชนิด",
+                    "ใช้ AI โดยไม่สนใจกฎหมายหรือสิทธิของผู้อื่น"
+                ],
+                correct: 1
+            },
+            {
+                id: 12,
+                question: "ข้อใดเป็นคุณลักษณะของการประมวลแบบคลาวด์",
+                options: [
+                    "ไม่จำเป็นต้องมีอินเทอร์เน็ต",
+                    "ลดปริมาณการใช้อินเทอร์เน็ต",
+                    "ใช้ทรัพยากรคอมพิวเตอร์ร่วมกันได้",
+                    "ผู้ใช้บริการจะต้องมีความเชี่ยวชาญในการดูแลทรัพยากรคอมพิวเตอร์"
+                ],
+                correct: 2
+            },
+            {
+                id: 13,
+                question: "ข้อใดเป็นการใช้คลาวด์ในชีวิตประจำวัน",
+                options: [
+                    "เก็บเอกสารไว้ในตู้ที่บ้าน",
+                    "ฟังเพลงผ่าน Spotify",
+                    "บันทึกงานในแฟลชไดรฟ์",
+                    "เล่นเกมออฟไลน์"
+                ],
+                correct: 1
+            },
+            {
+                id: 14,
+                question: "ข้อใดไม่ใช่บริการที่ใช้การประมวลผลแบบคลาวด์",
+                options: [
+                    "Google Drive",
+                    "OneDrive",
+                    "iCloud",
+                    "แฟลชไดรฟ์"
+                ],
+                correct: 3
+            },
+            {
+                id: 15,
+                question: "ข้อใดเป็นความเสี่ยงในการใช้ระบบคลาวด์",
+                options: [
+                    "การเข้าถึงข้อมูลได้สะดวก",
+                    "ความเป็นส่วนตัวและความปลอดภัยของข้อมูล",
+                    "ความสามารถในการทำงานร่วมกัน",
+                    "การใช้พื้นที่เก็บข้อมูลอย่างคุ้มค่า"
+                ],
+                correct: 1
+            },
+            {
+                id: 16,
+                question: "ข้อความใด กล่าวถูกต้องที่สุดเกี่ยวกับ IoT",
+                options: [
+                    "ข้อมูลจากอุปกรณ์ IoT ทำให้เกิดวิทยาการข้อมูล (data science)",
+                    "อุปกรณ์ IoT มีความปลอดภัยของข้อมูลสูงกว่าอุปกรณ์ที่ไม่เป็น IoT",
+                    "ข้อมูลจากอุปกรณ์ IoT ต้องเป็นตัวเลขเท่านั้นจึงจะนำมาวิเคราะห์ได้",
+                    "IoT ทำให้อุปกรณ์อิเล็กทรอนิกส์สามารถเชื่อมต่อและแลกเปลี่ยนข้อมูลระหว่างกันได้"
+                ],
+                correct: 3
+            },
+            {
+                id: 17,
+                question: "IoT มีองค์ประกอบอยู่กี่ส่วน",
+                options: [
+                    "1 ส่วน",
+                    "2 ส่วน",
+                    "3 ส่วน",
+                    "4 ส่วน"
+                ],
+                correct: 3
+            },
+            {
+                id: 18,
+                question: "ตัวอย่างใดต่อไปนี้เป็น IoT",
+                options: [
+                    "เครื่องซักผ้าแบบธรรมดา",
+                    "นาฬิกาข้อมือดิจิทัลที่ไม่เชื่อมต่ออินเทอร์เน็ต",
+                    "นาฬิกา Smart Watch ที่บันทึกการเต้นของหัวใจแล้วส่งข้อมูลเข้ามือถือ",
+                    "พัดลมตั้งโต๊ะ"
+                ],
+                correct: 2
+            },
+            {
+                id: 19,
+                question: "ข้อใดคือพฤติกรรมการใช้สื่อออนไลน์ที่ไม่เหมาะสม",
+                options: [
+                    "เคารพลิขสิทธิ์ผู้อื่น",
+                    "การโพสต์ข้อมูลส่วนตัวมากเกินไป",
+                    "การใช้คำสุภาพในการสื่อสาร",
+                    "การอ้างอิงที่มาของข้อมูลเสมอ"
+                ],
+                correct: 1
+            },
+            {
+                id: 20,
+                question: "หากเจอข่าวปลอม (Fake News) นักเรียนควรทำอย่างไร",
+                options: [
+                    "แชร์ต่อทันทีเพื่อบอกเพื่อน",
+                    "ตรวจสอบจากหลายแหล่งข้อมูลก่อนเชื่อหรือแชร์",
+                    "สร้างข่าวปลอมเพิ่มเพื่อความสนุก",
+                    "โพสต์ด่าผู้เขียนข่าวโดยไม่หาข้อเท็จจริง"
+                ],
+                correct: 1
+            }
+        ];
+
+        const essayQuestions = [
+            {
+                id: 21,
+                question: "ให้นักเรียนอธิบายความหมายของปัญญาประดิษฐ์ (AI) และยกตัวอย่างการใช้งานในชีวิตประจำวันมา 5 อย่าง",
+                type: "essay",
+                sampleAnswer: "ปัญญาประดิษฐ์ (AI) คือ เทคโนโลยีที่ทำให้เครื่องจักรสามารถเรียนรู้ คิด และตัดสินใจได้เหมือนมนุษย์\n\nตัวอย่างการใช้งาน:\n1. ผู้ช่วยเสียง (Siri, Google Assistant)\n2. ระบบแนะนำใน Netflix, YouTube\n3. การแปลภาษาอัตโนมัติ\n4. ระบบตรวจจับใบหน้าในโทรศัพท์\n5. รถยนต์ขับเคลื่อนอัตโนมัติ"
+            },
+            {
+                id: 22,
+                question: "ให้นักเรียนเลือกผู้ให้บริการคลาวด์ 1 บริการ แล้วให้บอกประเด็นดังต่อไปนี้ พร้อมวาดภาพประกอบ\n2.1 ให้บริการด้านใด\n2.2 จุดเด่น ข้อดีของบริการ\n2.3 ข้อจำกัด ข้อเสียของบริการ",
+                type: "essay",
+                sampleAnswer: "Google Drive\n\n2.1 ให้บริการด้าน: เก็บข้อมูลออนไลน์ แชร์ไฟล์ ทำงานร่วมกัน\n\n2.2 จุดเด่น/ข้อดี:\n- ฟรี 15 GB\n- ใช้งานง่าย\n- ทำงานร่วมกันแบบเรียลไทม์\n- เข้าถึงได้ทุกอุปกรณ์\n\n2.3 ข้อจำกัด/ข้อเสีย:\n- ต้องมีอินเทอร์เน็ต\n- ความเป็นส่วนตัวของข้อมูล\n- พื้นที่จำกัดในแพ็กเกจฟรี"
+            }
+        ];
+
+        // ฟังก์ชันสำหรับสุ่มลำดับของ array
+        function shuffleArray(array) {
+            const shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+
+        // ฟังก์ชันสำหรับสุ่มตัวเลือกในแต่ละข้อ
+        function shuffleQuestionOptions(question) {
+            const originalCorrect = question.correct;
+            const optionsWithIndex = question.options.map((option, index) => ({
+                text: option,
+                originalIndex: index
+            }));
+            
+            const shuffledOptions = shuffleArray(optionsWithIndex);
+            
+            return {
+                ...question,
+                options: shuffledOptions.map(opt => opt.text),
+                correct: shuffledOptions.findIndex(opt => opt.originalIndex === originalCorrect)
+            };
+        }
+
+        // ฟังก์ชันสำหรับเริ่มต้นการสุ่มข้อสอบ
+        function initializeQuiz() {
+            // สุ่มลำดับข้อสอบปรนัย
+            shuffledQuestions = shuffleArray(questions).map(q => shuffleQuestionOptions(q));
+            
+            // สุ่มลำดับข้อสอบอัตนัย
+            shuffledEssayQuestions = shuffleArray(essayQuestions);
+            
+            // อัพเดท ID ใหม่ตามลำดับที่สุ่ม
+            shuffledQuestions.forEach((q, index) => {
+                q.displayId = index + 1;
+            });
+            
+            shuffledEssayQuestions.forEach((q, index) => {
+                q.displayId = shuffledQuestions.length + index + 1;
+            });
+        }
+
+        let userAnswers = {};
+        let isSubmitted = false;
+        let showEssayAnswers = false;
+        let currentView = 'multiple'; // 'multiple', 'essay', 'answers'
+
+        function renderEssayQuestions() {
+            const container = document.getElementById('essayContainer');
+            container.innerHTML = '';
+
+            shuffledEssayQuestions.forEach((q, index) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.className = 'bg-white rounded-xl shadow-md p-6 border-l-4 border-purple-400';
+                
+                questionDiv.innerHTML = `
+                    <div class="mb-6">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-4 leading-relaxed">
+                            <span class="inline-block bg-purple-100 text-purple-800 px-4 py-2 rounded-full text-base font-medium mr-4">
+                                ข้อ ${q.displayId}
+                            </span>
+                            ${q.question.replace(/\n/g, '<br>')}
+                        </h3>
+                    </div>
+                    <div class="bg-gray-50 rounded-lg p-5 mb-5">
+                        <textarea 
+                            class="w-full h-40 p-4 border border-gray-300 rounded-lg resize-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-lg leading-relaxed" 
+                            placeholder="เขียนคำตอบของคุณที่นี่..."
+                            id="essay-${q.id}"></textarea>
+                    </div>
+                    ${showEssayAnswers ? `
+                        <div class="bg-green-50 border border-green-200 rounded-lg p-5">
+                            <h4 class="font-semibold text-green-800 mb-3 text-lg">💡 ตัวอย่างคำตอบ:</h4>
+                            <div class="text-gray-700 whitespace-pre-line text-lg leading-relaxed">${q.sampleAnswer}</div>
+                        </div>
+                    ` : ''}
+                `;
+                
+                container.appendChild(questionDiv);
+            });
+        }
+
+        function renderQuestions() {
+            const container = document.getElementById('questionsContainer');
+            container.innerHTML = '';
+
+            shuffledQuestions.forEach((q, index) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.className = 'question-card bg-white rounded-xl shadow-md p-6 border-l-4 border-blue-400';
+                
+                questionDiv.innerHTML = `
+                    <div class="mb-6">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-4 leading-relaxed">
+                            <span class="inline-block bg-blue-100 text-blue-800 px-4 py-2 rounded-full text-base font-medium mr-4">
+                                ข้อ ${q.displayId}
+                            </span>
+                            ${q.question}
+                        </h3>
+                    </div>
+                    <div class="space-y-4">
+                        ${q.options.map((option, optIndex) => `
+                            <button class="option-btn w-full text-left p-5 rounded-xl border-2 border-gray-200 hover:border-blue-300 hover:bg-blue-50 transition-all duration-200 ${userAnswers[q.id] === optIndex ? 'selected' : ''} ${isSubmitted ? (optIndex === q.correct ? 'correct-answer' : (userAnswers[q.id] === optIndex ? 'incorrect-answer' : '')) : ''}" 
+                                    onclick="selectAnswer(${q.id}, ${optIndex})" 
+                                    ${isSubmitted ? 'disabled' : ''}>
+                                <span class="font-semibold text-gray-700 text-lg mr-3">
+                                    ${String.fromCharCode(65 + optIndex)}. 
+                                </span>
+                                <span class="text-gray-800 text-lg leading-relaxed">${option}</span>
+                                ${isSubmitted ? (optIndex === q.correct ? '<span class="float-right text-white font-bold text-lg">✓ ถูก</span>' : (userAnswers[q.id] === optIndex ? '<span class="float-right text-white font-bold text-lg">✗ ผิด</span>' : '')) : ''}
+                            </button>
+                        `).join('')}
+                    </div>
+                `;
+                
+                container.appendChild(questionDiv);
+            });
+        }
+
+        function selectAnswer(questionId, optionIndex) {
+            if (isSubmitted) return;
+            
+            userAnswers[questionId] = optionIndex;
+            updateProgress();
+            renderQuestions();
+        }
+
+        function updateProgress() {
+            const answered = Object.keys(userAnswers).length;
+            const progress = Math.round((answered / shuffledQuestions.length) * 100);
+            document.getElementById('progress').textContent = `ความคืบหน้า: ${progress}%`;
+            document.getElementById('progressBar').style.width = `${progress}%`;
+            
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = answered < shuffledQuestions.length;
+        }
+
+        function submitQuiz() {
+            if (isSubmitted) return;
+            
+            isSubmitted = true;
+            let score = 0;
+            let correctAnswers = [];
+            let incorrectAnswers = [];
+            
+            shuffledQuestions.forEach(q => {
+                if (userAnswers[q.id] === q.correct) {
+                    score++;
+                    correctAnswers.push(q.id);
+                } else {
+                    incorrectAnswers.push(q.id);
+                }
+            });
+            
+            const percentage = Math.round((score/20)*100);
+            
+            // Update main score display
+            document.getElementById('score').textContent = `${score}/20`;
+            
+            // Update detailed results
+            document.getElementById('correctCount').textContent = score;
+            document.getElementById('incorrectCount').textContent = 20 - score;
+            document.getElementById('percentageScore').textContent = `${percentage}%`;
+            document.getElementById('finalScore').textContent = `${score}/20 คะแนน`;
+            
+            let message = '';
+            if (score >= 18) message = '🏆 ยอดเยี่ยม! คุณเข้าใจเนื้อหาเป็นอย่างดี';
+            else if (score >= 15) message = '🎉 ดีมาก! คุณมีความรู้ในระดับดี';
+            else if (score >= 12) message = '👍 ดี! ควรทบทวนเนื้อหาเพิ่มเติม';
+            else if (score >= 10) message = '📚 ปานกลาง ควรศึกษาเพิ่มเติม';
+            else message = '💪 ควรทบทวนเนื้อหาใหม่และลองทำอีกครั้ง';
+            
+            document.getElementById('scoreMessage').textContent = message;
+            document.getElementById('results').classList.remove('hidden');
+            document.getElementById('submitBtn').style.display = 'none';
+            
+            renderQuestions();
+            
+            // Scroll to results
+            setTimeout(() => {
+                document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+            }, 500);
+        }
+
+        function resetQuiz() {
+            userAnswers = {};
+            isSubmitted = false;
+            showEssayAnswers = false;
+            
+            // สุ่มข้อสอบใหม่
+            initializeQuiz();
+            
+            document.getElementById('score').textContent = '0/20';
+            document.getElementById('progress').textContent = 'ความคืบหน้า: 0%';
+            document.getElementById('progressBar').style.width = '0%';
+            document.getElementById('results').classList.add('hidden');
+            document.getElementById('submitBtn').style.display = 'inline-block';
+            document.getElementById('submitBtn').disabled = true;
+            document.getElementById('showAnswersBtn').textContent = 'ดูตัวอย่างคำตอบ 📝';
+            renderQuestions();
+            renderEssayQuestions();
+            
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function toggleEssayAnswers() {
+            showEssayAnswers = !showEssayAnswers;
+            const btn = document.getElementById('showAnswersBtn');
+            btn.textContent = showEssayAnswers ? 'ซ่อนคำตอบ 🙈' : 'ดูตัวอย่างคำตอบ 📝';
+            renderEssayQuestions();
+        }
+
+        function switchView(view) {
+            currentView = view;
+            
+            // Update menu buttons
+            document.querySelectorAll('.menu-btn').forEach(btn => {
+                btn.className = 'menu-btn bg-gray-200 text-gray-700 px-6 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200';
+            });
+            
+            // Hide all sections
+            document.getElementById('quizInfo').classList.add('hidden');
+            document.getElementById('questionsContainer').classList.add('hidden');
+            document.getElementById('essaySection').classList.add('hidden');
+            document.getElementById('answerKeySection').classList.add('hidden');
+            document.getElementById('results').classList.add('hidden');
+            
+            const submitBtn = document.getElementById('submitBtn');
+            if (submitBtn) submitBtn.style.display = 'none';
+            
+            switch(view) {
+                case 'multiple':
+                    document.getElementById('menuMultiple').className = 'menu-btn bg-gradient-to-r from-blue-500 to-purple-600 text-white px-6 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200';
+                    document.getElementById('quizInfo').classList.remove('hidden');
+                    document.getElementById('questionsContainer').classList.remove('hidden');
+                    if (submitBtn) submitBtn.style.display = 'inline-block';
+                    if (isSubmitted) {
+                        document.getElementById('results').classList.remove('hidden');
+                        submitBtn.style.display = 'none';
+                    }
+                    break;
+                case 'essay':
+                    document.getElementById('menuEssay').className = 'menu-btn bg-gradient-to-r from-purple-500 to-pink-600 text-white px-6 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200';
+                    document.getElementById('essaySection').classList.remove('hidden');
+                    break;
+                case 'answers':
+                    document.getElementById('menuAnswers').className = 'menu-btn bg-gradient-to-r from-green-500 to-emerald-600 text-white px-6 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200';
+                    document.getElementById('answerKeySection').classList.remove('hidden');
+                    renderAnswerKey();
+                    break;
+            }
+        }
+
+        function renderAnswerKey() {
+            // Render essay answers only
+            const essayContainer = document.getElementById('essayAnswers');
+            essayContainer.innerHTML = '';
+            
+            shuffledEssayQuestions.forEach((q, index) => {
+                const answerDiv = document.createElement('div');
+                answerDiv.className = 'bg-gradient-to-r from-purple-50 to-blue-50 rounded-xl p-6 border-l-4 border-purple-400 shadow-sm';
+                answerDiv.innerHTML = `
+                    <h4 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+                        <span class="inline-block bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm font-medium mr-3">
+                            ข้อ ${q.displayId}
+                        </span>
+                        ${q.question.split('\n')[0]}
+                    </h4>
+                    <div class="bg-white rounded-lg p-5 border border-gray-200">
+                        <h5 class="font-semibold text-green-700 mb-3 text-lg flex items-center">
+                            <span class="mr-2">💡</span>
+                            ตัวอย่างคำตอบ:
+                        </h5>
+                        <div class="text-gray-700 whitespace-pre-line leading-relaxed text-lg">${q.sampleAnswer}</div>
+                    </div>
+                `;
+                essayContainer.appendChild(answerDiv);
+            });
+        }
+
+        function shuffleQuestions() {
+            initializeQuiz();
+            renderQuestions();
+            renderEssayQuestions();
+            if (currentView === 'answers') {
+                renderAnswerKey();
+            }
+        }
+
+        // Event Listeners
+        document.getElementById('submitBtn').addEventListener('click', submitQuiz);
+        document.getElementById('retryBtn').addEventListener('click', resetQuiz);
+        document.getElementById('showAnswersBtn').addEventListener('click', toggleEssayAnswers);
+        
+        // Menu navigation
+        document.getElementById('menuMultiple').addEventListener('click', () => switchView('multiple'));
+        document.getElementById('menuEssay').addEventListener('click', () => switchView('essay'));
+        document.getElementById('menuAnswers').addEventListener('click', () => switchView('answers'));
+        
+        // Control buttons
+        document.getElementById('resetBtn').addEventListener('click', resetQuiz);
+        document.getElementById('shuffleBtn').addEventListener('click', shuffleQuestions);
+
+        // Initialize
+        initializeQuiz();
+        renderQuestions();
+        renderEssayQuestions();
+        updateProgress();
+        switchView('multiple');
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97f1f57326ef130f',t:'MTc1Nzg3NDY2MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
